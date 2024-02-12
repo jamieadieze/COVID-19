@@ -1,0 +1,49 @@
+SELECT *
+FROM CovidDeaths
+ORDER BY location;
+
+SELECT location, date, total_cases, new_cases, total_deaths, population
+FROM CovidDeaths
+ORDER BY location;
+
+-- Looking at total cases vs total deaths 
+-- Showing the likelihood of death if you were to contract covid in the UK during different times
+SELECT location, date, total_cases, new_cases, total_deaths, (total_deaths*1.0/total_cases)*100 AS percenatage_deaths
+FROM CovidDeaths
+WHERE location = 'United Kingdom'
+ORDER BY location;
+
+-- Looking at total cases vs Population
+-- Showing what percentage of the population had covid at any given date
+SELECT location, date, total_cases, new_cases, population, (total_cases*1.0/population)*100 AS covid_prevalence
+FROM CovidDeaths
+WHERE location = 'United Kingdom'
+ORDER BY location;
+
+
+-- To remove 'continents' and 'income classes' from the location column:
+-- WHERE location NOT IN ('World', 'Africa', 'Europe', 'European Union', 'Asia', 'North America', 'South America', 'Oceania', 'Antarctica')
+-- AND location NOT LIKE '%income%'
+
+
+-- Looking at countries with the highest infection rate
+SELECT location, population, MAX(total_cases) AS cases_all_time_high, (MAX(total_cases*1.0/population))*100 AS 'peak_prevelance (as %)'
+FROM CovidDeaths
+WHERE location NOT IN ('World', 'Africa', 'Europe', 'European Union', 'Asia', 'North America', 'South America', 'Oceania', 'Antarctica')
+AND location NOT LIKE '%income%'
+GROUP BY location
+ORDER BY 'peak_prevelance (as %)' desc;
+
+-- Looking at countries with highest death rate
+SELECT location, population, MAX(total_deaths) AS deaths_all_time_high, (MAX(total_deaths*1.0/population))*100 AS 'peak_death_rate (as %)'
+FROM CovidDeaths
+WHERE location NOT IN ('World', 'Africa', 'Europe', 'European Union', 'Asia', 'North America', 'South America', 'Oceania', 'Antarctica')
+AND location NOT LIKE '%income%'
+GROUP BY location
+ORDER BY 'peak_death_rate (as %)' desc;
+
+-- Total death by continents
+SELECT continent, sum(total_deaths) AS death_count
+FROM CovidDeaths
+GROUP BY continent
+ORDER BY death_count
